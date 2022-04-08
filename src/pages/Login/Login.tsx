@@ -31,7 +31,7 @@ function Copyright(props: any) {
 const theme = createTheme();
 
 export default function SignIn() {
-  const [formError, setFormError] = useState(false);
+  const [formHasFailed, setFormHasFailed] = useState(false);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -39,10 +39,10 @@ export default function SignIn() {
     const email = data.get('email') as string;
     const password = data.get('password') as string;
     AuthenticationService.tryLogin(email, password).then(res => {
-      setFormError(false);
-      AuthenticationService.registerSuccessfulLogin(email, res.headers['Authentication']);
+      setFormHasFailed(false);
+      AuthenticationService.registerSuccessfulLogin(email, res.headers['authorization']);
     }).catch(err => {
-      setFormError(true);
+      setFormHasFailed(true);
       console.error('Authentication error', err);
     });
   };
