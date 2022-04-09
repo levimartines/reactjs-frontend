@@ -14,7 +14,7 @@ export const Forbidden = () => {
       }}
     >
       <Typography component="h1" variant="h5">
-        Please <Link color="inherit" href="https://mui.com/">Log In</Link> to continue
+        Please <Link color="inherit" href="/">Log In</Link> to continue
       </Typography>
     </Box>
   );

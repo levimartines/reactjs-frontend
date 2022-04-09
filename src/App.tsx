@@ -9,6 +9,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
+import { ProtectedComponent } from './pages/ProtectedComponent/ProtectedComponent';
 
 const theme = createTheme();
 
@@ -29,8 +30,8 @@ function App() {
           <Routes>
             <Route path="/" element={<Login/>}/>
             <Route path="/forbidden" element={<Forbidden/>}/>
-            <Route path="/dashboard" element={<Dashboard/>}/>
-            <Route path="/preferences" element={<Preferences/>}/>
+            <Route path="/dashboard" element={<ProtectedComponent component={<Dashboard/>}/>}/>
+            <Route path="/preferences" element={<ProtectedComponent component={<Preferences/>}/>}/>
             <Route path="*" element={<Navigate to="/dashboard"/>}/>
           </Routes>
         </BrowserRouter>
