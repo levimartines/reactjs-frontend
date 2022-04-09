@@ -2,7 +2,6 @@ import * as React from 'react';
 import { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
@@ -11,9 +10,17 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import AuthenticationService from '../../services/AuthenticationService';
+import { Snackbar } from '@mui/material';
+import MuiAlert, { AlertProps } from '@mui/material/Alert';
+import { useNavigate } from 'react-router-dom';
+
+const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
+  props,
+  ref,
+) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 function Copyright(props: any) {
   return (
@@ -28,10 +35,17 @@ function Copyright(props: any) {
   );
 }
 
-const theme = createTheme();
-
 export default function SignIn() {
-  const [formHasFailed, setFormHasFailed] = useState(false);
+  const navigate = useNavigate();
+  const [loginFailedAlert, setLoginFailedAlert] = useState(false);
+
+  const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setLoginFailedAlert(false);
+  };
+
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -39,18 +53,15 @@ export default function SignIn() {
     const email = data.get('email') as string;
     const password = data.get('password') as string;
     AuthenticationService.tryLogin(email, password).then(res => {
-      setFormHasFailed(false);
       AuthenticationService.registerSuccessfulLogin(email, res.headers['authorization']);
+      navigate('/dashboard')
     }).catch(err => {
-      setFormHasFailed(true);
-      console.error('Authentication error', err);
+      setLoginFailedAlert(true);
     });
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="xs">
-        <CssBaseline/>
+    <>
         <Box
           sx={{
             marginTop: 8,
@@ -112,8 +123,13 @@ export default function SignIn() {
             </Grid>
           </Box>
         </Box>
-        <Copyright sx={{ mt: 8, mb: 4 }}/>
-      </Container>
-    </ThemeProvider>
+      <Snackbar anchorOrigin={{ horizontal: 'center', vertical: 'top' }} open={loginFailedAlert}
+                autoHideDuration={4000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="warning" sx={{ width: '100%' }}>
+          Login failed. Wrong email or password.
+        </Alert>
+      </Snackbar>
+      <Copyright sx={{ mt: 8, mb: 4 }}/>
+    </>
   );
 }
